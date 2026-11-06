@@ -1,0 +1,222 @@
+---
+import "../styles/tokens.css";
+import "../styles/global.css";
+import Icon from "../components/Icon.astro";
+import { site, copy } from "../data/site";
+import { withBase } from "../lib/paths";
+import { isWebUrl } from "../lib/catalog";
+interface Props {
+  title?: string;
+  description?: string;
+  current?: "home" | "software" | "about";
+  noindex?: boolean;
+}
+const {
+  title,
+  description = site.description,
+  current,
+  noindex = false,
+} = Astro.props;
+const pageTitle = title
+  ? `${title} · Muse`
+  : "Muse — Simple software for everyday life";
+const canonical = Astro.site
+  ? new URL(Astro.url.pathname, Astro.site)
+  : undefined;
+const socialImage = Astro.site
+  ? new URL(withBase("assets/social-preview.png"), Astro.site)
+  : withBase("assets/social-preview.png");
+const source =
+  site.links.source && isWebUrl(site.links.source)
+    ? site.links.source
+    : undefined;
+const contact =
+  site.links.contact &&
+  (isWebUrl(site.links.contact) ||
+    /^mailto:[^\s@]+@[^\s@]+$/.test(site.links.contact))
+    ? site.links.contact
+    : undefined;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <meta name="color-scheme" content="light dark" />
+    <meta
+      name="theme-color"
+      content="#f8f9f5"
+      media="(prefers-color-scheme: light)"
+    />
+    <meta
+      name="theme-color"
+      content="#111714"
+      media="(prefers-color-scheme: dark)"
+    />
+    {noindex && <meta name="robots" content="noindex, follow" />}
+    <title>{pageTitle}</title>
+    {canonical && <link rel="canonical" href={canonical} />}
+    <link rel="icon" href={withBase("favicon.svg")} type="image/svg+xml" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Muse" />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:image" content={socialImage} />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta
+      property="og:image:alt"
+      content="Muse. Simple software that makes everyday life better."
+    />
+    {canonical && <meta property="og:url" content={canonical} />}
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={socialImage} />
+    <script is:inline>
+      // Apply before paint. Storage is optional; system preference is the default.
+      (() => {
+        let preference = "system";
+        try {
+          preference = localStorage.getItem("muse-theme") || "system";
+        } catch {}
+        if (!["light", "dark", "system"].includes(preference))
+          preference = "system";
+        const dark =
+          preference === "dark" ||
+          (preference === "system" &&
+            matchMedia("(prefers-color-scheme: dark)").matches);
+        document.documentElement.dataset.theme = dark ? "dark" : "light";
+        document.documentElement.dataset.themePreference = preference;
+      })();
+    </script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">
+      Skip to content
+    </a>
+    <header class="site-header">
+      <div class="container header-inner">
+        <a class="wordmark" href={withBase()} aria-label="Muse home">
+          Muse
+          <span class="wordmark-dot" aria-hidden="true">
+            .
+          </span>
+        </a>
+        <nav aria-label="Main navigation">
+          {Object.entries(copy.nav).map(([key, label]) => (
+            <a
+              href={withBase(key === "home" ? "" : `${key}/`)}
+              aria-current={current === key ? "page" : undefined}
+            >
+              {label}
+            </a>
+          ))}
+        </nav>
+        <div class="theme-controls" hidden>
+          <button
+            class="theme-toggle"
+            id="theme-toggle"
+            type="button"
+            aria-label="Change theme"
+          >
+            <Icon name="sun" class="theme-sun" size={19} />
+            <Icon name="moon" class="theme-moon" size={19} />
+            <span id="theme-label">Theme</span>
+          </button>
+        </div>
+      </div>
+    </header>
+    <main id="main" tabindex="-1">
+      <slot />
+    </main>
+    <footer class="site-footer">
+      <div class="container footer-top">
+        <div>
+          <a class="wordmark footer-wordmark" href={withBase()}>
+            Muse
+            <span class="wordmark-dot" aria-hidden="true">
+              .
+            </span>
+          </a>
+          <p>Small tools. Thoughtfully made.</p>
+        </div>
+        <div class="footer-principle">{site.philosophy}</div>
+      </div>
+      <div class="container footer-bottom">
+        <p>An independent personal software collection.</p>
+        <div class="footer-links">
+          {source && (
+            <a href={source}>
+              Source <Icon name="diagonal" size={15} />
+            </a>
+          )}
+          {contact && (
+            <a href={contact}>
+              Contact <Icon name="diagonal" size={15} />
+            </a>
+          )}
+          <a href={withBase("about/")}>About Muse</a>
+        </div>
+      </div>
+    </footer>
+    <script>
+      const root = document.documentElement;
+      const button = document.querySelector<HTMLButtonElement>("#theme-toggle");
+      const label = document.querySelector("#theme-label");
+      const system = matchMedia("(prefers-color-scheme: dark)");
+      const options = ["system", "light", "dark"];
+      function applyTheme(preference: string) {
+        root.dataset.themePreference = preference;
+        root.dataset.theme =
+          preference === "dark" || (preference === "system" && system.matches)
+            ? "dark"
+            : "light";
+        const next =
+          options[(options.indexOf(preference) + 1) % options.length];
+        const name = preference.charAt(0).toUpperCase() + preference.slice(1);
+        if (label) label.textContent = name;
+        button?.setAttribute(
+          "aria-label",
+          `Theme: ${name}. Switch to ${next} theme`,
+        );
+        button?.setAttribute(
+          "title",
+          `Theme: ${name}. Switch to ${next} theme`,
+        );
+      }
+      if (button) {
+        document.querySelector<HTMLElement>(".theme-controls")!.hidden = false;
+        applyTheme(root.dataset.themePreference || "system");
+        button.addEventListener("click", () => {
+          const next =
+            options[
+              (options.indexOf(root.dataset.themePreference || "system") + 1) %
+                options.length
+            ];
+          applyTheme(next);
+          try {
+            localStorage.setItem("muse-theme", next);
+          } catch {
+            /* Preference still works for this page. */
+          }
+        });
+        system.addEventListener("change", () => {
+          if (root.dataset.themePreference === "system") applyTheme("system");
+        });
+        window.addEventListener("storage", (event) => {
+          if (event.key === "muse-theme")
+            applyTheme(
+              options.includes(event.newValue || "")
+                ? event.newValue!
+                : "system",
+            );
+        });
+      }
+    </script>
+  </body>
+</html>

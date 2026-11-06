@@ -1,0 +1,48 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import EmptyCatalog from "../../components/EmptyCatalog.astro";
+import AppCard from "../../components/AppCard.astro";
+import Icon from "../../components/Icon.astro";
+import { apps } from "../../data/apps";
+import { copy } from "../../data/site";
+import { publishedApps } from "../../lib/catalog";
+const catalog = publishedApps(apps);
+---
+
+<Layout
+  title="Software"
+  description={copy.catalog.description}
+  current="software"
+>
+  <div class="container page-content">
+    <header class="page-heading">
+      <p class="eyebrow">The Muse collection</p>
+      <h1>{copy.catalog.title}</h1>
+      <p>{copy.catalog.description}</p>
+    </header>
+    <section aria-label="Published applications">
+      {catalog.length > 0 ? (
+        <div class="app-grid">
+          {catalog.map((app) => (
+            <AppCard app={app} />
+          ))}
+        </div>
+      ) : (
+        <EmptyCatalog headingLevel="h2" />
+      )}
+    </section>
+    <aside class="catalog-note">
+      <div class="soft-icon">
+        <Icon name="info" size={22} />
+      </div>
+      <div>
+        <h2>A clear picture of every project.</h2>
+        <p>
+          Each application page will list its actual features, requirements, and
+          available builds. Windows and Linux are the current desktop targets;
+          support is listed only after the project’s workflows have been tested.
+        </p>
+      </div>
+    </aside>
+  </div>
+</Layout>

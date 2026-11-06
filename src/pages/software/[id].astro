@@ -1,0 +1,20 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import AppDetail from "../../components/AppDetail.astro";
+import { apps } from "../../data/apps";
+import { publishedApps, type MuseApp } from "../../lib/catalog";
+export function getStaticPaths() {
+  return publishedApps(apps).map((app) => ({
+    params: { id: app.id },
+    props: { app },
+  }));
+}
+interface Props {
+  app: MuseApp;
+}
+const { app } = Astro.props;
+---
+
+<Layout title={app.name} description={app.tagline} current="software">
+  <AppDetail app={app} />
+</Layout>

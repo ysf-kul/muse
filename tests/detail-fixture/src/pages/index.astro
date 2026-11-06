@@ -1,0 +1,65 @@
+---
+// Synthetic rendering data only. No public application or download is implied.
+import Layout from "../../../../src/layouts/Layout.astro";
+import AppDetail from "../../../../src/components/AppDetail.astro";
+import AppCard from "../../../../src/components/AppCard.astro";
+import { validateCatalog, type MuseApp } from "../../../../src/lib/catalog";
+interface Props {
+  rich?: boolean;
+}
+const rich = Astro.props.rich === true;
+const app: MuseApp = {
+  id: "render-fixture",
+  name: "Rendering test fixture",
+  tagline: "Synthetic test data, never a public Muse application.",
+  description:
+    "This isolated page verifies the reusable application components.",
+  status: "prototype",
+  published: false,
+  buildVerifiedPlatforms: ["Windows"],
+  ...(rich
+    ? {
+        platforms: ["Linux"] as MuseApp["platforms"],
+        testedPlatforms: [
+          {
+            platform: "Linux" as const,
+            environment: "Synthetic runtime record for rendering tests",
+          },
+        ],
+        features: ["Synthetic feature for the rendering test"],
+        requirements: ["Synthetic requirement"],
+        installation: ["Synthetic installation step"],
+        limitations: ["Synthetic limitation"],
+        version: "test-version",
+        releaseDate: "2026-11-07",
+        repositoryUrl: "https://github.com/ysf-kul/muse",
+        documentationUrl: "https://github.com/ysf-kul/muse#readme",
+        issuesUrl: "https://github.com/ysf-kul/muse/issues",
+        screenshots: [
+          {
+            src: "/assets/social-preview.png",
+            alt: "Test image using the site’s social preview, not an application screenshot",
+            width: 1200,
+            height: 630,
+          },
+        ],
+        downloads: [
+          {
+            label: "Synthetic link test (no download)",
+            platform: "Linux" as const,
+            url: "https://github.com/ysf-kul/muse",
+          },
+        ],
+      }
+    : { features: [], requirements: [], installation: [], limitations: [] }),
+};
+validateCatalog([app]);
+---
+
+<Layout title="Isolated rendering test" noindex>
+  <AppDetail app={app} />
+  <div class="container section">
+    <h2>Card rendering test</h2>
+    <AppCard app={app} />
+  </div>
+</Layout>

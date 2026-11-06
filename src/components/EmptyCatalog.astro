@@ -1,0 +1,23 @@
+---
+import Icon from "./Icon.astro";
+import { copy } from "../data/site";
+import { withBase } from "../lib/paths";
+interface Props {
+  headingLevel?: "h2" | "h3";
+}
+const Heading = Astro.props.headingLevel ?? "h3";
+---
+
+<div class="empty-catalog">
+  <div class="empty-icon">
+    <Icon name="grid" size={30} />
+  </div>
+  <div class="empty-content">
+    <p class="eyebrow">{copy.catalog.emptyLabel}</p>
+    <Heading>{copy.catalog.emptyTitle}</Heading>
+    <p>{copy.catalog.emptyDescription}</p>
+    <a class="text-link" href={withBase("about/")}>
+      Get to know Muse <Icon name="arrow" size={19} />
+    </a>
+  </div>
+</div>

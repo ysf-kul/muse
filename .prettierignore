@@ -1,0 +1,10 @@
+node_modules
+dist
+.astro
+playwright-report
+test-results
+package-lock.json
+AGENTS.md
+MUSE_GUIDELINES.md
+MUSE_DESIGN_SYSTEM.md
+MUSE_WEBSITE_PROMPT.md

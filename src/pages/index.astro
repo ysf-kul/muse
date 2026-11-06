@@ -1,0 +1,120 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Icon from "../components/Icon.astro";
+import AppCard from "../components/AppCard.astro";
+import EmptyCatalog from "../components/EmptyCatalog.astro";
+import { apps } from "../data/apps";
+import { site } from "../data/site";
+import { publishedApps } from "../lib/catalog";
+import { withBase } from "../lib/paths";
+const catalog = publishedApps(apps);
+const selected = catalog.filter((app) => app.featured);
+const featured = selected.length > 0 ? selected : catalog.slice(0, 3);
+---
+
+<Layout current="home">
+  <section class="container hero" aria-labelledby="hero-title">
+    <div class="hero-copy">
+      <p class="eyebrow">
+        <span class="accent-line" aria-hidden="true"></span>Independent by
+        nature
+      </p>
+      <h1 id="hero-title">
+        Simple software.
+        <br />
+        <span>A better everyday.</span>
+      </h1>
+      <p class="hero-slogan">{site.slogan}</p>
+      <p class="hero-description">
+        A personal collection of useful tools, built with care and a little help
+        from AI. Small ideas for the things you do every day.
+      </p>
+      <div class="hero-actions">
+        <a class="button button-filled" href={withBase("software/")}>
+          Explore the software <Icon name="arrow" size={20} />
+        </a>
+        <a class="button button-text" href={withBase("about/")}>
+          A little about Muse <Icon name="diagonal" size={18} />
+        </a>
+      </div>
+    </div>
+    <aside class="hero-note" aria-label="The Muse approach">
+      <div class="hero-note-top">
+        <span class="eyebrow">The Muse approach</span>
+        <Icon name="diagonal" size={28} />
+      </div>
+      <p>
+        Less friction. <br />
+        More room for <br />
+        <span>the everyday.</span>
+      </p>
+      <div class="hero-note-bottom">
+        <span>
+          Useful by purpose.
+          <br />
+          Thoughtful by design.
+        </span>
+        <span class="note-monogram" aria-hidden="true">
+          m.
+        </span>
+      </div>
+    </aside>
+  </section>
+  <div class="container values-strip" aria-label="Muse values">
+    <span>
+      <Icon name="heart" size={18} />
+      Personal & independent
+    </span>
+    <span>
+      <Icon name="layers" size={18} />
+      One shared design language
+    </span>
+    <span>
+      <Icon name="code" size={18} />
+      Built with AI assistance
+    </span>
+  </div>
+  <section class="container section" aria-labelledby="software-heading">
+    <div class="section-heading">
+      <div>
+        <p class="eyebrow">The collection</p>
+        <h2 id="software-heading">Little tools. Real purpose.</h2>
+      </div>
+      <a class="text-link" href={withBase("software/")}>
+        All software <Icon name="arrow" size={20} />
+      </a>
+    </div>
+    {featured.length > 0 ? (
+      <div class="app-grid">
+        {featured.map((app) => (
+          <AppCard app={app} />
+        ))}
+      </div>
+    ) : (
+      <EmptyCatalog />
+    )}
+  </section>
+  <section
+    class="container philosophy-panel"
+    aria-labelledby="philosophy-heading"
+  >
+    <div>
+      <p class="eyebrow">A common thread</p>
+      <h2 id="philosophy-heading">
+        Different Apps.
+        <br />
+        <span>One Muse.</span>
+      </h2>
+    </div>
+    <div class="philosophy-copy">
+      <p>
+        Different tools can feel at home together. Muse projects share a
+        thoughtful design language, clear interactions, and a focus on making
+        everyday tasks a little easier.
+      </p>
+      <a class="text-link" href={withBase("about/")}>
+        The idea behind Muse <Icon name="arrow" size={19} />
+      </a>
+    </div>
+  </section>
+</Layout>

@@ -1,0 +1,45 @@
+---
+import type { MuseApp } from "../lib/catalog";
+import { copy } from "../data/site";
+import { withBase } from "../lib/paths";
+import Icon from "./Icon.astro";
+interface Props {
+  app: MuseApp;
+}
+const { app } = Astro.props;
+---
+
+<article class="app-card">
+  <div class="app-card-top">
+    <div class="app-icon">
+      {app.icon ? (
+        <img
+          src={withBase(app.icon)}
+          alt=""
+          width="56"
+          height="56"
+          loading="lazy"
+        />
+      ) : (
+        <span aria-hidden="true">{app.name.charAt(0)}</span>
+      )}
+    </div>
+    <span class="chip">{copy.status[app.status]}</span>
+  </div>
+  <h3>
+    <a href={withBase(`software/${app.id}/`)}>{app.name}</a>
+  </h3>
+  <p>{app.tagline}</p>
+  <div class="platform-chips">
+    {app.platforms?.map((platform) => (
+      <span class="chip">
+        <Icon name="monitor" size={15} />
+        {platform}
+      </span>
+    ))}
+  </div>
+  <a class="text-link" href={withBase(`software/${app.id}/`)}>
+    Explore {app.name}
+    <Icon name="arrow" size={19} />
+  </a>
+</article>

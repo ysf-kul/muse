@@ -1,0 +1,72 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Icon from "../components/Icon.astro";
+import { withBase } from "../lib/paths";
+---
+
+<Layout
+  title="About Muse"
+  description="A personal software collection, made with care and AI assistance. Meet the idea behind Muse."
+  current="about"
+>
+  <div class="container page-content">
+    <header class="page-heading">
+      <p class="eyebrow">A little introduction</p>
+      <h1>
+        Small ideas.
+        <br />
+        <span>Thoughtfully made.</span>
+      </h1>
+      <p>
+        Muse is a personal collection of software projects, each starting with a
+        simple idea: make an everyday task a little better.
+      </p>
+    </header>
+    <div class="about-grid">
+      <section class="about-story" aria-labelledby="about-heading">
+        <h2 id="about-heading">Independent by nature.</h2>
+        <p>
+          Muse is an independent personal project, not a company. It’s a place
+          for useful tools with focused purposes and considered interfaces.
+        </p>
+        <p>
+          AI tools help with designing and building the projects. Those tools
+          may change over time; Muse is not tied to any one model or provider.
+          The projects and their source repositories remain the source of truth.
+        </p>
+        <p>
+          The aim is simple: software that does something useful, feels pleasant
+          to use, and respects the person using it.
+        </p>
+        <a class="button button-filled" href={withBase("software/")}>
+          Explore the collection <Icon name="arrow" size={20} />
+        </a>
+      </section>
+      <aside class="about-principles" aria-label="What guides Muse">
+        <p class="eyebrow">What guides the work</p>
+        <div>
+          <Icon name="heart" />
+          <h3>Purpose before more.</h3>
+          <p>
+            A clear job to do. No features just for the sake of a longer list.
+          </p>
+        </div>
+        <div>
+          <Icon name="layers" />
+          <h3>Different Apps. One Muse.</h3>
+          <p>
+            Individual tools, connected by a shared, accessible design language.
+          </p>
+        </div>
+        <div>
+          <Icon name="code" />
+          <h3>Tools can change.</h3>
+          <p>
+            AI-assisted development, with project knowledge kept in the
+            repository.
+          </p>
+        </div>
+      </aside>
+    </div>
+  </div>
+</Layout>
