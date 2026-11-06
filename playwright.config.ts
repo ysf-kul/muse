@@ -25,5 +25,11 @@ export default defineConfig({
       url: "http://127.0.0.1:4322/muse/",
       reuseExistingServer: !process.env.CI,
     },
+    {
+      command:
+        "npx astro build --root tests/navigation-fixture --ignore-lock && npx astro preview --root tests/navigation-fixture --port 4324 --host 127.0.0.1 --ignore-lock",
+      url: "http://127.0.0.1:4324/muse/",
+      reuseExistingServer: !process.env.CI,
+    },
   ],
 });

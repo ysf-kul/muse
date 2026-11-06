@@ -6,6 +6,8 @@ import { site } from "../data/site";
 import Text from "../components/Text.astro";
 import {
   messages,
+  locales,
+  defaultLocale,
   translate,
   languageNames,
   type TranslationKey,
@@ -14,6 +16,7 @@ import {
 import { currentLocale, localeUrl, translatedAttribute } from "../i18n/server";
 import { pagePath } from "../i18n/routing";
 import preferences from "../i18n/preferences.js?raw";
+import languageState from "../i18n/language-state.js?raw";
 import { withBase } from "../lib/paths";
 import { isWebUrl } from "../lib/catalog";
 interface Props {
@@ -78,6 +81,9 @@ const contact =
 <html
   lang={locale}
   data-rendered-locale={locale}
+  data-supported-locales={JSON.stringify(locales)}
+  data-default-locale={defaultLocale}
+  data-language-names={JSON.stringify(languageNames)}
   data-base-path={import.meta.env.BASE_URL}
   data-page-path={route}
   data-known-page={noindex ? "false" : "true"}
@@ -139,23 +145,11 @@ const contact =
     <meta name="twitter:title" {...titleMeta} />
     <meta name="twitter:description" {...descriptionMeta} />
     <meta name="twitter:image" content={socialImage} />
+    <script set:html={languageState} is:inline />
     <script is:inline>
-      // Apply before paint. Storage is optional; system preference is the default.
+      // Apply the independent theme preference before paint.
       (() => {
         const root = document.documentElement;
-        const base = root.dataset.basePath.replace(/\/$/, "");
-        const relative = location.pathname.slice(base.length + 1);
-        let language = "tr";
-        try {
-          language = localStorage.getItem("muse-language") || "tr";
-        } catch {}
-        if (!["tr", "en"].includes(language)) language = "tr";
-        if (relative === "en" || relative.startsWith("en/")) language = "en";
-        root.dataset.preferredLocale = language;
-        if (language !== root.dataset.renderedLocale) {
-          root.setAttribute("data-language-pending", "");
-          setTimeout(() => root.removeAttribute("data-language-pending"), 1500);
-        }
         let preference = "system";
         try {
           preference = localStorage.getItem("muse-theme") || "system";
@@ -166,8 +160,8 @@ const contact =
           preference === "dark" ||
           (preference === "system" &&
             matchMedia("(prefers-color-scheme: dark)").matches);
-        document.documentElement.dataset.theme = dark ? "dark" : "light";
-        document.documentElement.dataset.themePreference = preference;
+        root.dataset.theme = dark ? "dark" : "light";
+        root.dataset.themePreference = preference;
       })();
     </script>
   </head>
