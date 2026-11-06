@@ -15,17 +15,27 @@ npm ci
 npm run dev
 ```
 
-Open **http://localhost:4321/muse/**. The default `/muse/` base matches the verified repository, [ysf-kul/muse](https://github.com/ysf-kul/muse).
+Open **http://localhost:4321/muse/** for Turkish or **http://localhost:4321/muse/en/** for English. The default `/muse/` base matches the verified repository, [ysf-kul/muse](https://github.com/ysf-kul/muse).
 
 ```sh
 npm run check        # Astro and TypeScript checks
 npm run format:check # Source formatting
-npm test             # Catalog and deployment unit tests
+npm test             # Catalog, localization, and deployment unit tests
 npm run build        # Type checking and static production build
 npm run preview      # Serve the build at http://localhost:4321/muse/
 ```
 
-The production output is `dist/`. There is no backend, runtime AI API, analytics, tracking, cookie use, or remotely hosted font dependency. A localStorage entry stores an explicitly selected theme; if storage is blocked, the control still works for the current page. System preference is the default and follows changes to the operating system’s theme.
+The production output is `dist/`. There is no backend, runtime AI API, analytics, tracking, cookie use, or remotely hosted font dependency. The theme follows the system by default. Explicit choices use `muse-theme` in localStorage and remain independent of the language preference.
+
+## Languages
+
+**Turkish is the default for first-time visitors**, regardless of browser language. The header shows the current language, **Türkçe** or **English**. Activating it switches immediately without reloading the document, preserves the theme, and stores the choice in `muse-language` in localStorage. Subsequent visits to the Turkish routes restore that preference. An explicit `/en/` URL opens the English version. Invalid saved values fall back to Turkish and the system theme; blocked storage still allows switching and navigation during the visit.
+
+Both languages share the existing components and page templates. Turkish routes are `/`, `/about/`, and `/software/` relative to the configured base; English equivalents add `en/`. Published applications generate detail routes in both languages. Switching keeps the current page, query parameters, and fragment, and updates internal links, `html lang`, titles, descriptions, canonical URLs, and social metadata. Static English routes also work without JavaScript. GitHub Pages serves one custom 404 document; its language follows the preference or an English URL when JavaScript is available. Without JavaScript, that error document uses Turkish.
+
+Edit `src/i18n/messages.ts` for shared Turkish and English copy. Typed keys, interpolation validation, and dictionary parity tests guard against omissions. Use `Text.astro` for translated text, `translatedAttribute` for accessible labels, and `{ tr, en }` values for app-specific content. `src/i18n/preferences.js` applies language changes in the browser without an API call or translation service.
+
+## Hosting paths
 
 For a different hosting path, set `BASE_PATH` with a leading and trailing slash. Set `SITE_URL` to the production origin, without a path. Both are shell environment variables; `.env.example` documents their format. `astro.config.mjs` reads `process.env`, so importing these through a particular dotenv tool is optional.
 
@@ -52,7 +62,7 @@ On supported Linux CI distributions, install the browser and system libraries wi
 
 The tests start a production preview and a separate development-only fixture site. Synthetic fixture data lives under `tests/detail-fixture/` and is never included in the production catalog or production routes. It exercises optional app fields and platform verification without publishing a fictional application.
 
-Tests cover internal links, HTTP status codes, custom 404 recovery, metadata and local assets, 320–1920 px widths, 200% text, keyboard access, focus rings, reduced motion, disabled JavaScript, blocked preference storage, theme persistence, and automated WCAG accessibility checks in light and dark themes. Automated accessibility checks complement human screen-reader testing.
+Tests cover both languages, internal links, HTTP status codes, custom 404 recovery, metadata and local assets, 320–1920 px widths, 200% text, keyboard access, focus rings, reduced motion, disabled JavaScript, blocked and invalid preference storage, immediate language switching, preference persistence, tab synchronization, and automated WCAG accessibility checks in light and dark themes. The isolated app fixture also checks translated content, dates, image descriptions, captions, and cards. Automated accessibility checks complement human screen-reader testing.
 
 ## Publish to GitHub Pages
 
@@ -69,44 +79,45 @@ No force push, history replacement, backend configuration, or credentials in sou
 
 Edit **`src/data/apps.ts`**. The `MuseApp` type in `src/lib/catalog.ts` documents every supported field. Add one verified entry and its optimized assets under `public/assets/`; cards, home selection, app routes, and the sitemap update automatically.
 
-Required fields are `id` (a unique lowercase slug), `name`, `tagline`, `description`, `status`, and `published`. Set `published: true` only when the information is ready to appear publicly. Valid statuses are `prototype`, `in-development`, `released`, and `archived`. Use `featured: true` to select a home-page feature; if none are selected, the home page shows up to three published entries.
+Required fields are `id` (a unique lowercase slug), `name`, `tagline`, `description`, `status`, and `published`. Human-facing text, including `tagline` and `description`, requires a non-empty `{ tr: "…", en: "…" }` object. App names, platform identifiers, URLs, version identifiers, and file sizes retain their original values. Set `published: true` only when the information is ready to appear publicly. Valid statuses are `prototype`, `in-development`, `released`, and `archived`. Use `featured: true` to select a home-page feature; if none are selected, the home page shows up to three published entries.
 
 Optional fields:
 
-| Field                                            | Verified content to provide                                                  |
-| ------------------------------------------------ | ---------------------------------------------------------------------------- |
-| `icon`                                           | Local `/assets/` path; otherwise a text initial is used                      |
-| `screenshots`                                    | `{ src, alt, width, height, caption? }` entries using real local screenshots |
-| `features`                                       | Implemented features, as plain text                                          |
-| `platforms`                                      | Supported `Windows` and/or `Linux`, backed by runtime records                |
-| `testedPlatforms`                                | `{ platform, environment, notes? }` records of actual runtime testing        |
-| `buildVerifiedPlatforms`                         | Build verification only; never treated as runtime support                    |
-| `requirements`, `installation`, `limitations`    | Plain-text lists of verified requirements, steps, and limitations            |
-| `version`, `releaseDate`                         | Verified version and real ISO `YYYY-MM-DD` date                              |
-| `downloads`                                      | `{ label, platform, url, size? }` entries for actual available builds        |
-| `repositoryUrl`, `documentationUrl`, `issuesUrl` | Real HTTP(S) project links                                                   |
+| Field                                            | Verified content to provide                                                    |
+| ------------------------------------------------ | ------------------------------------------------------------------------------ |
+| `icon`                                           | Local `/assets/` path; otherwise a text initial is used                        |
+| `screenshots`                                    | `{ src, alt, width, height, caption? }`; `alt` and `caption` use `{ tr, en }`  |
+| `features`                                       | Implemented features, each as `{ tr, en }`                                     |
+| `platforms`                                      | Supported `Windows` and/or `Linux`, backed by runtime records                  |
+| `testedPlatforms`                                | Actual runtime records; `environment` and optional `notes` use `{ tr, en }`    |
+| `buildVerifiedPlatforms`                         | Build verification only; never treated as runtime support                      |
+| `requirements`, `installation`, `limitations`    | Lists of `{ tr, en }` values for verified requirements, steps, and limitations |
+| `version`, `releaseDate`                         | Verified version and real ISO `YYYY-MM-DD` date                                |
+| `downloads`                                      | `{ label, platform, url, size? }`; `label` uses `{ tr, en }` for real builds   |
+| `repositoryUrl`, `documentationUrl`, `issuesUrl` | Real HTTP(S) project links                                                     |
 
 Unknown optional fields should be omitted. Empty sections and buttons are not rendered. Missing screenshots and downloads have explicit unavailable states. Preserve accurate screenshot dimensions to prevent layout shifts, and use compressed WebP/PNG assets appropriate to their display size.
 
-**Windows and Linux are desktop targets, not blanket support claims.** `platforms` requires corresponding runtime test details; a build alone cannot establish support. Linux records should identify the distribution and relevant environment. macOS is not currently supported or tested and cannot be entered as a supported desktop platform. Catalog validation rejects inconsistent platform claims, invalid dates, unsafe URLs, and invalid asset paths. It cannot establish whether supplied project claims are true; verify the underlying projects before publication.
+**Windows and Linux are desktop targets, not blanket support claims.** `platforms` requires corresponding runtime test details; a build alone cannot establish support. Linux records should identify the distribution and relevant environment. macOS is not currently supported or tested and cannot be entered as a supported desktop platform. Catalog validation rejects inconsistent platform claims, incomplete bilingual text, invalid dates, unsafe URLs, and invalid asset paths. It cannot establish whether supplied project claims are true; verify the underlying projects before publication.
 
 ## Structure and design
 
 ```text
-src/data/             Central English site copy and application catalog
+src/data/             Verified site identity, links, and application catalog
+src/i18n/             Turkish/English dictionaries, routing, preference runtime
 src/lib/              Catalog validation and base-path helpers
 src/components/       Shared cards, detail content, icons, and empty state
-src/layouts/          Semantic page shell, navigation, metadata, theme behavior
-src/pages/            Home, software, generated app routes, about, 404, sitemap
+src/layouts/          Semantic shell, navigation, metadata, language/theme controls
+src/pages/            Shared pages, generated English/app routes, 404, sitemap
 src/styles/tokens.css Material 3 color roles, typography, spacing, shape, motion
 src/styles/global.css Responsive components and interaction states
 tests/                Unit and browser tests, isolated rendering fixtures
 .github/workflows/    GitHub Pages validation and deployment
 ```
 
-The interface follows `MUSE_DESIGN_SYSTEM.md` with centralized Material 3 roles, filled and text buttons, tonal navigation, consistent outlined icons, restrained expressive shapes, responsive layouts, visible focus, and reduced-motion support. The wordmark is typography based because no existing brand logo was supplied. Manrope is served locally through Fontsource under its bundled SIL Open Font License. English copy is centralized where shared; remaining page copy lives in static templates for future localization.
+The interface follows `MUSE_DESIGN_SYSTEM.md` with centralized Material 3 roles, filled and text buttons, tonal navigation, consistent outlined icons, restrained expressive shapes, responsive layouts, visible focus, and reduced-motion support. The language control uses the existing control shapes and tokens alongside the theme selector. The wordmark is typography based because no existing brand logo was supplied. Manrope's Latin and Latin Extended subsets are served locally through Fontsource under its bundled SIL Open Font License, including Turkish glyphs. All shared copy is centralized in the bilingual dictionary.
 
-The social preview is a typography-only image, not an application screenshot. Regenerate it with `node scripts/generate-social-preview.mjs` after installing Chromium. No image generation API is required.
+The English and Turkish social previews are typography-only images, not application screenshots. Regenerate both from the shared dictionary with `node scripts/generate-social-preview.mjs` after installing Chromium. No image generation API is required.
 
 ## Contribution attribution
 

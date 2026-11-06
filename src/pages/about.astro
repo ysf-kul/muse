@@ -1,70 +1,59 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import Icon from "../components/Icon.astro";
-import { withBase } from "../lib/paths";
+import Text from "../components/Text.astro";
+import { currentLocale, localeUrl, translatedAttribute } from "../i18n/server";
+const locale = currentLocale(Astro.url.pathname);
 ---
 
 <Layout
-  title="About Muse"
-  description="A personal software collection, made with care and AI assistance. Meet the idea behind Muse."
+  titleKey="seo.aboutTitle"
+  descriptionKey="seo.aboutDescription"
   current="about"
 >
   <div class="container page-content">
     <header class="page-heading">
-      <p class="eyebrow">A little introduction</p>
+      <Text as="p" class="eyebrow" k="about.eyebrow" />
       <h1>
-        Small ideas.
+        <Text k="about.titleFirst" />
         <br />
-        <span>Thoughtfully made.</span>
+        <Text k="about.titleSecond" class="headline-accent" />
       </h1>
-      <p>
-        Muse is a personal collection of software projects, each starting with a
-        simple idea: make an everyday task a little better.
-      </p>
+      <Text as="p" k="about.intro" />
     </header>
     <div class="about-grid">
       <section class="about-story" aria-labelledby="about-heading">
-        <h2 id="about-heading">Independent by nature.</h2>
-        <p>
-          Muse is an independent personal project, not a company. It’s a place
-          for useful tools with focused purposes and considered interfaces.
-        </p>
-        <p>
-          AI tools help with designing and building the projects. Those tools
-          may change over time; Muse is not tied to any one model or provider.
-          The projects and their source repositories remain the source of truth.
-        </p>
-        <p>
-          The aim is simple: software that does something useful, feels pleasant
-          to use, and respects the person using it.
-        </p>
-        <a class="button button-filled" href={withBase("software/")}>
-          Explore the collection <Icon name="arrow" size={20} />
+        <Text as="h2" id="about-heading" k="about.heading" />
+        <Text as="p" k="about.personal" />
+        <Text as="p" k="about.tools" />
+        <Text as="p" k="about.aim" />
+        <a
+          class="button button-filled"
+          href={localeUrl("software/", locale)}
+          data-route="software/"
+        >
+          <Text k="about.explore" /> <Icon name="arrow" size={20} />
         </a>
       </section>
-      <aside class="about-principles" aria-label="What guides Muse">
-        <p class="eyebrow">What guides the work</p>
+      <aside
+        class="about-principles"
+        {...translatedAttribute("aria-label", "a11y.principles", locale)}
+      >
+        <Text as="p" class="eyebrow" k="about.guides" />
         <div>
           <Icon name="heart" />
-          <h3>Purpose before more.</h3>
-          <p>
-            A clear job to do. No features just for the sake of a longer list.
-          </p>
+          <Text as="h3" k="about.purposeTitle" />
+          <Text as="p" k="about.purpose" />
         </div>
         <div>
           <Icon name="layers" />
-          <h3>Different Apps. One Muse.</h3>
-          <p>
-            Individual tools, connected by a shared, accessible design language.
-          </p>
+          <Text as="h3" k="brand.philosophy" />
+          <Text as="p" k="about.design" />
         </div>
         <div>
           <Icon name="code" />
-          <h3>Tools can change.</h3>
-          <p>
-            AI-assisted development, with project knowledge kept in the
-            repository.
-          </p>
+          <Text as="h3" k="about.toolsTitle" />
+          <Text as="p" k="about.knowledge" />
         </div>
       </aside>
     </div>

@@ -3,6 +3,7 @@
 import Layout from "../../../../src/layouts/Layout.astro";
 import AppDetail from "../../../../src/components/AppDetail.astro";
 import AppCard from "../../../../src/components/AppCard.astro";
+import Text from "../../../../src/components/Text.astro";
 import { validateCatalog, type MuseApp } from "../../../../src/lib/catalog";
 interface Props {
   rich?: boolean;
@@ -10,10 +11,15 @@ interface Props {
 const rich = Astro.props.rich === true;
 const app: MuseApp = {
   id: "render-fixture",
-  name: "Rendering test fixture",
-  tagline: "Synthetic test data, never a public Muse application.",
-  description:
-    "This isolated page verifies the reusable application components.",
+  name: "MuseTest",
+  tagline: {
+    tr: "Yalnızca arayüz testi için örnek veri; yayımlanmış bir Muse uygulaması değildir.",
+    en: "Synthetic test data, never a public Muse application.",
+  },
+  description: {
+    tr: "Bu yalıtılmış sayfa, ortak uygulama bileşenlerini test eder.",
+    en: "This isolated page verifies the reusable application components.",
+  },
   status: "prototype",
   published: false,
   buildVerifiedPlatforms: ["Windows"],
@@ -23,14 +29,28 @@ const app: MuseApp = {
         testedPlatforms: [
           {
             platform: "Linux" as const,
-            environment: "Synthetic runtime record for rendering tests",
+            environment: {
+              tr: "Arayüz testi için örnek çalıştırma kaydı",
+              en: "Synthetic runtime record for rendering tests",
+            },
+            notes: {
+              tr: "Gerçek bir platform desteği iddiası değildir.",
+              en: "This is not a real platform support claim.",
+            },
           },
         ],
-        features: ["Synthetic feature for the rendering test"],
-        requirements: ["Synthetic requirement"],
-        installation: ["Synthetic installation step"],
-        limitations: ["Synthetic limitation"],
-        version: "test-version",
+        features: [
+          {
+            tr: "Arayüz testi için örnek özellik",
+            en: "Synthetic feature for the rendering test",
+          },
+        ],
+        requirements: [{ tr: "Örnek gereksinim", en: "Synthetic requirement" }],
+        installation: [
+          { tr: "Örnek kurulum adımı", en: "Synthetic installation step" },
+        ],
+        limitations: [{ tr: "Örnek sınırlama", en: "Synthetic limitation" }],
+        version: "test-1",
         releaseDate: "2026-11-07",
         repositoryUrl: "https://github.com/ysf-kul/muse",
         documentationUrl: "https://github.com/ysf-kul/muse#readme",
@@ -38,14 +58,24 @@ const app: MuseApp = {
         screenshots: [
           {
             src: "/assets/social-preview.png",
-            alt: "Test image using the site’s social preview, not an application screenshot",
+            alt: {
+              tr: "Sitenin paylaşım görseliyle oluşturulmuş test görseli; uygulama ekran görüntüsü değildir",
+              en: "Test image using the site’s social preview, not an application screenshot",
+            },
+            caption: {
+              tr: "Yalnızca bileşen testi için kullanılır.",
+              en: "Used only for component testing.",
+            },
             width: 1200,
             height: 630,
           },
         ],
         downloads: [
           {
-            label: "Synthetic link test (no download)",
+            label: {
+              tr: "Deneme bağlantısı (indirme yok)",
+              en: "Synthetic link test (no download)",
+            },
             platform: "Linux" as const,
             url: "https://github.com/ysf-kul/muse",
           },
@@ -56,10 +86,16 @@ const app: MuseApp = {
 validateCatalog([app]);
 ---
 
-<Layout title="Isolated rendering test" noindex>
+<Layout
+  title={{ tr: "Yalıtılmış bileşen testi", en: "Isolated rendering test" }}
+  noindex
+>
   <AppDetail app={app} />
   <div class="container section">
-    <h2>Card rendering test</h2>
+    <Text
+      as="h2"
+      value={{ tr: "Kart bileşeni testi", en: "Card rendering test" }}
+    />
     <AppCard app={app} />
   </div>
 </Layout>

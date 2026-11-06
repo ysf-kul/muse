@@ -4,23 +4,25 @@ import EmptyCatalog from "../../components/EmptyCatalog.astro";
 import AppCard from "../../components/AppCard.astro";
 import Icon from "../../components/Icon.astro";
 import { apps } from "../../data/apps";
-import { copy } from "../../data/site";
+import Text from "../../components/Text.astro";
+import { currentLocale, translatedAttribute } from "../../i18n/server";
 import { publishedApps } from "../../lib/catalog";
 const catalog = publishedApps(apps);
+const locale = currentLocale(Astro.url.pathname);
 ---
 
 <Layout
-  title="Software"
-  description={copy.catalog.description}
+  titleKey="seo.softwareTitle"
+  descriptionKey="catalog.description"
   current="software"
 >
   <div class="container page-content">
     <header class="page-heading">
-      <p class="eyebrow">The Muse collection</p>
-      <h1>{copy.catalog.title}</h1>
-      <p>{copy.catalog.description}</p>
+      <Text as="p" class="eyebrow" k="catalog.eyebrow" />
+      <Text as="h1" k="catalog.title" />
+      <Text as="p" k="catalog.description" />
     </header>
-    <section aria-label="Published applications">
+    <section {...translatedAttribute("aria-label", "a11y.published", locale)}>
       {catalog.length > 0 ? (
         <div class="app-grid">
           {catalog.map((app) => (
@@ -36,12 +38,8 @@ const catalog = publishedApps(apps);
         <Icon name="info" size={22} />
       </div>
       <div>
-        <h2>A clear picture of every project.</h2>
-        <p>
-          Each application page will list its actual features, requirements, and
-          available builds. Windows and Linux are the current desktop targets;
-          support is listed only after the project’s workflows have been tested.
-        </p>
+        <Text as="h2" k="catalog.noteTitle" />
+        <Text as="p" k="catalog.note" />
       </div>
     </aside>
   </div>

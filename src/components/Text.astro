@@ -1,0 +1,40 @@
+---
+import {
+  translate,
+  type TranslationKey,
+  type TranslationParams,
+  type LocalizedText,
+} from "../i18n/messages";
+import { currentLocale } from "../i18n/server";
+import type { HTMLTag } from "astro/types";
+interface Props {
+  k?: TranslationKey;
+  value?: LocalizedText;
+  params?: TranslationParams;
+  as?: HTMLTag;
+  class?: string;
+  id?: string;
+}
+const {
+  k,
+  value,
+  params,
+  as: Tag = "span",
+  class: className,
+  id,
+} = Astro.props;
+const locale = currentLocale(Astro.url.pathname);
+if (!k && !value)
+  throw new Error("Text needs a translation key or bilingual value.");
+const text = k ? translate(locale, k, params) : value![locale];
+---
+
+<Tag
+  class={className}
+  id={id}
+  data-i18n={k}
+  data-localized={value ? JSON.stringify(value) : undefined}
+  data-i18n-params={params ? JSON.stringify(params) : undefined}
+>
+  {text}
+</Tag>

@@ -1,7 +1,8 @@
 import type { APIRoute } from "astro";
 import { apps } from "../data/apps";
 import { publishedApps } from "../lib/catalog";
-import { withBase } from "../lib/paths";
+import { locales } from "../i18n/messages";
+import { localeUrl } from "../i18n/server";
 
 export const GET: APIRoute = ({ site }) => {
   const paths = [
@@ -12,9 +13,11 @@ export const GET: APIRoute = ({ site }) => {
   ];
   const urls = site
     ? paths
-        .map(
-          (path) =>
-            `<url><loc>${new URL(withBase(path), site).href.replaceAll("&", "&amp;")}</loc></url>`,
+        .flatMap((path) =>
+          locales.map(
+            (locale) =>
+              `<url><loc>${new URL(localeUrl(path, locale), site).href.replaceAll("&", "&amp;")}</loc></url>`,
+          ),
         )
         .join("")
     : "";

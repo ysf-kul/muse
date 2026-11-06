@@ -1,36 +1,38 @@
+import { isLocalizedText, type LocalizedText } from "../i18n/messages.ts";
+
 export type DesktopPlatform = "Windows" | "Linux";
 export type AppStatus =
   "prototype" | "in-development" | "released" | "archived";
 export interface MuseApp {
   id: string;
   name: string;
-  tagline: string;
-  description: string;
+  tagline: LocalizedText;
+  description: LocalizedText;
   status: AppStatus;
   published: boolean;
   icon?: string;
   screenshots?: {
     src: string;
-    alt: string;
+    alt: LocalizedText;
     width: number;
     height: number;
-    caption?: string;
+    caption?: LocalizedText;
   }[];
-  features?: string[];
+  features?: LocalizedText[];
   platforms?: DesktopPlatform[];
   testedPlatforms?: {
     platform: DesktopPlatform;
-    environment: string;
-    notes?: string;
+    environment: LocalizedText;
+    notes?: LocalizedText;
   }[];
   buildVerifiedPlatforms?: DesktopPlatform[];
-  requirements?: string[];
-  installation?: string[];
-  limitations?: string[];
+  requirements?: LocalizedText[];
+  installation?: LocalizedText[];
+  limitations?: LocalizedText[];
   version?: string;
   releaseDate?: string;
   downloads?: {
-    label: string;
+    label: LocalizedText;
     platform: DesktopPlatform;
     url: string;
     size?: string;
@@ -73,8 +75,23 @@ export function validateCatalog(entries: MuseApp[]): void {
       fail("id must be a lowercase URL slug");
     if (ids.has(app.id)) fail("duplicate id");
     ids.add(app.id);
-    for (const key of ["name", "tagline", "description"] as const) {
-      if (!app[key]?.trim()) fail(`${key} is required`);
+    if (!app.name?.trim()) fail("name is required");
+    for (const key of ["tagline", "description"] as const) {
+      if (!isLocalizedText(app[key]))
+        fail(`${key}: non-empty Turkish and English translations are required`);
+    }
+    for (const key of [
+      "features",
+      "requirements",
+      "installation",
+      "limitations",
+    ] as const) {
+      for (const value of app[key] ?? []) {
+        if (!isLocalizedText(value))
+          fail(
+            `${key}: non-empty Turkish and English translations are required`,
+          );
+      }
     }
     if (typeof app.published !== "boolean") fail("published must be a boolean");
     if (
@@ -94,8 +111,13 @@ export function validateCatalog(entries: MuseApp[]): void {
     if (app.icon && !isAssetPath(app.icon))
       fail("icon must be a local /assets/ path");
     for (const screenshot of app.screenshots ?? []) {
-      if (!isAssetPath(screenshot.src) || !screenshot.alt?.trim())
+      if (!isAssetPath(screenshot.src) || !isLocalizedText(screenshot.alt))
         fail("screenshots need local assets and meaningful alt text");
+      if (
+        screenshot.caption !== undefined &&
+        !isLocalizedText(screenshot.caption)
+      )
+        fail("screenshot captions need Turkish and English translations");
       if (
         !Number.isInteger(screenshot.width) ||
         !Number.isInteger(screenshot.height) ||
@@ -118,11 +140,13 @@ export function validateCatalog(entries: MuseApp[]): void {
         fail(`${platform} support requires runtime test details`);
     }
     for (const tested of app.testedPlatforms ?? []) {
-      if (!tested.environment?.trim())
+      if (!isLocalizedText(tested.environment))
         fail("runtime tests need a specific environment");
+      if (tested.notes !== undefined && !isLocalizedText(tested.notes))
+        fail("runtime notes need Turkish and English translations");
     }
     for (const download of app.downloads ?? []) {
-      if (!isWebUrl(download.url) || !download.label?.trim())
+      if (!isWebUrl(download.url) || !isLocalizedText(download.label))
         fail("downloads need a label and HTTP(S) URL");
     }
     if (app.version !== undefined && !app.version.trim())

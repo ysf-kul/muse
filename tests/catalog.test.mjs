@@ -7,11 +7,14 @@ import {
   isAssetPath,
 } from "../src/lib/catalog.ts";
 
+const localized = (text) => ({ tr: text, en: text });
 const fixture = (extra = {}) => ({
   id: "test-fixture",
   name: "Test fixture",
-  tagline: "Test data only",
-  description: "Synthetic data for validation tests, never published.",
+  tagline: localized("Test data only"),
+  description: localized(
+    "Synthetic data for validation tests, never published.",
+  ),
   status: "prototype",
   published: false,
   ...extra,
@@ -66,8 +69,8 @@ test("only verified Windows and Linux support can be listed", () => {
       fixture({
         platforms: ["Windows", "Linux"],
         testedPlatforms: [
-          { platform: "Windows", environment: "Test environment A" },
-          { platform: "Linux", environment: "Test environment B" },
+          { platform: "Windows", environment: localized("Test environment A") },
+          { platform: "Linux", environment: localized("Test environment B") },
         ],
       }),
     ]),
@@ -115,7 +118,7 @@ test("screenshots require real asset paths, alt text, and dimensions", () => {
           screenshots: [
             {
               src: "/assets/test.png",
-              alt: "Test only",
+              alt: localized("Test only"),
               width: 0,
               height: 100,
             },
@@ -123,6 +126,23 @@ test("screenshots require real asset paths, alt text, and dimensions", () => {
         }),
       ]),
     /width and height/,
+  );
+});
+
+test("application text must be complete in both languages", () => {
+  for (const value of [
+    "English only",
+    { en: "English only" },
+    { tr: " ", en: "English" },
+  ]) {
+    assert.throws(
+      () => validateCatalog([fixture({ tagline: value })]),
+      /Turkish and English/,
+    );
+  }
+  assert.throws(
+    () => validateCatalog([fixture({ features: [{ en: "Missing Turkish" }] })]),
+    /Turkish and English/,
   );
 });
 test("downloads require a label and a safe URL", () => {

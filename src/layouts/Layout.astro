@@ -2,30 +2,66 @@
 import "../styles/tokens.css";
 import "../styles/global.css";
 import Icon from "../components/Icon.astro";
-import { site, copy } from "../data/site";
+import { site } from "../data/site";
+import Text from "../components/Text.astro";
+import {
+  messages,
+  translate,
+  languageNames,
+  type TranslationKey,
+  type LocalizedText,
+} from "../i18n/messages";
+import { currentLocale, localeUrl, translatedAttribute } from "../i18n/server";
+import { pagePath } from "../i18n/routing";
+import preferences from "../i18n/preferences.js?raw";
 import { withBase } from "../lib/paths";
 import { isWebUrl } from "../lib/catalog";
 interface Props {
-  title?: string;
-  description?: string;
+  titleKey?: TranslationKey;
+  descriptionKey?: TranslationKey;
+  title?: LocalizedText;
+  description?: LocalizedText;
   current?: "home" | "software" | "about";
   noindex?: boolean;
 }
 const {
   title,
-  description = site.description,
+  description,
+  titleKey = "seo.homeTitle",
+  descriptionKey = "brand.description",
   current,
   noindex = false,
 } = Astro.props;
-const pageTitle = title
-  ? `${title} · Muse`
-  : "Muse — Simple software for everyday life";
+const locale = currentLocale(Astro.url.pathname);
+const nextLocale = locale === "tr" ? "en" : "tr";
+const pageTitle = title ? title[locale] : translate(locale, titleKey);
+const route = pagePath(Astro.url.pathname, import.meta.env.BASE_URL);
+const json = JSON.stringify(messages).replaceAll("<", "\\u003c");
+const titleAttributes = title
+  ? { "data-localized": JSON.stringify(title) }
+  : { "data-i18n": titleKey };
+const titleMeta = title
+  ? { content: title[locale], "data-localized-content": JSON.stringify(title) }
+  : translatedAttribute("content", titleKey, locale);
+const descriptionMeta = description
+  ? {
+      content: description[locale],
+      "data-localized-content": JSON.stringify(description),
+    }
+  : translatedAttribute("content", descriptionKey, locale);
 const canonical = Astro.site
   ? new URL(Astro.url.pathname, Astro.site)
   : undefined;
 const socialImage = Astro.site
-  ? new URL(withBase("assets/social-preview.png"), Astro.site)
-  : withBase("assets/social-preview.png");
+  ? new URL(
+      withBase(
+        `assets/${locale === "tr" ? "social-preview-tr.png" : "social-preview.png"}`,
+      ),
+      Astro.site,
+    )
+  : withBase(
+      `assets/${locale === "tr" ? "social-preview-tr.png" : "social-preview.png"}`,
+    );
 const source =
   site.links.source && isWebUrl(site.links.source)
     ? site.links.source
@@ -39,11 +75,18 @@ const contact =
 ---
 
 <!doctype html>
-<html lang="en">
+<html
+  lang={locale}
+  data-rendered-locale={locale}
+  data-base-path={import.meta.env.BASE_URL}
+  data-page-path={route}
+  data-known-page={noindex ? "false" : "true"}
+  data-site-origin={Astro.site?.origin}
+>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content={description} />
+    <meta name="description" {...descriptionMeta} />
     <meta name="color-scheme" content="light dark" />
     <meta
       name="theme-color"
@@ -56,30 +99,63 @@ const contact =
       media="(prefers-color-scheme: dark)"
     />
     {noindex && <meta name="robots" content="noindex, follow" />}
-    <title>{pageTitle}</title>
+    <title {...titleAttributes}>{pageTitle}</title>
     {canonical && <link rel="canonical" href={canonical} />}
+    {!noindex && Astro.site && (
+      <>
+        <link
+          rel="alternate"
+          hreflang="tr"
+          href={new URL(localeUrl(route, "tr"), Astro.site)}
+        />
+        <link
+          rel="alternate"
+          hreflang="en"
+          href={new URL(localeUrl(route, "en"), Astro.site)}
+        />
+        <link
+          rel="alternate"
+          hreflang="x-default"
+          href={new URL(localeUrl(route, "tr"), Astro.site)}
+        />
+      </>
+    )}
     <link rel="icon" href={withBase("favicon.svg")} type="image/svg+xml" />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Muse" />
-    <meta property="og:title" content={pageTitle} />
-    <meta property="og:description" content={description} />
-    <meta property="og:locale" content="en_US" />
+    <meta property="og:title" {...titleMeta} />
+    <meta property="og:description" {...descriptionMeta} />
+    <meta property="og:locale" content={locale === "tr" ? "tr_TR" : "en_US"} />
     <meta property="og:image" content={socialImage} />
     <meta property="og:image:type" content="image/png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta
       property="og:image:alt"
-      content="Muse. Simple software that makes everyday life better."
+      {...translatedAttribute("content", "seo.imageAlt", locale)}
     />
     {canonical && <meta property="og:url" content={canonical} />}
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content={pageTitle} />
-    <meta name="twitter:description" content={description} />
+    <meta name="twitter:title" {...titleMeta} />
+    <meta name="twitter:description" {...descriptionMeta} />
     <meta name="twitter:image" content={socialImage} />
     <script is:inline>
       // Apply before paint. Storage is optional; system preference is the default.
       (() => {
+        const root = document.documentElement;
+        const base = root.dataset.basePath.replace(/\/$/, "");
+        const relative = location.pathname.slice(base.length + 1);
+        let language = "tr";
+        try {
+          language = localStorage.getItem("muse-language") || "tr";
+        } catch {}
+        if (!["tr", "en"].includes(language)) language = "tr";
+        if (relative === "en" || relative.startsWith("en/")) language = "en";
+        root.dataset.preferredLocale = language;
+        if (language !== root.dataset.renderedLocale) {
+          root.setAttribute("data-language-pending", "");
+          setTimeout(() => root.removeAttribute("data-language-pending"), 1500);
+        }
         let preference = "system";
         try {
           preference = localStorage.getItem("muse-theme") || "system";
@@ -97,37 +173,64 @@ const contact =
   </head>
   <body>
     <a class="skip-link" href="#main">
-      Skip to content
+      <Text k="a11y.skip" />
     </a>
     <header class="site-header">
       <div class="container header-inner">
-        <a class="wordmark" href={withBase()} aria-label="Muse home">
+        <a
+          class="wordmark"
+          href={localeUrl("", locale)}
+          data-route=""
+          {...translatedAttribute("aria-label", "a11y.home", locale)}
+        >
           Muse
           <span class="wordmark-dot" aria-hidden="true">
             .
           </span>
         </a>
-        <nav aria-label="Main navigation">
-          {Object.entries(copy.nav).map(([key, label]) => (
+        <nav {...translatedAttribute("aria-label", "a11y.navigation", locale)}>
+          {(["home", "software", "about"] as const).map((key) => (
             <a
-              href={withBase(key === "home" ? "" : `${key}/`)}
+              href={localeUrl(key === "home" ? "" : `${key}/`, locale)}
+              data-route={key === "home" ? "" : `${key}/`}
               aria-current={current === key ? "page" : undefined}
             >
-              {label}
+              <Text k={`nav.${key}`} />
             </a>
           ))}
         </nav>
-        <div class="theme-controls" hidden>
-          <button
-            class="theme-toggle"
-            id="theme-toggle"
-            type="button"
-            aria-label="Change theme"
+        <div class="header-controls">
+          <a
+            class="language-toggle"
+            id="language-toggle"
+            href={localeUrl(noindex ? "" : route, nextLocale)}
+            aria-label={translate(locale, "language.action", {
+              current: languageNames[locale],
+              next: languageNames[nextLocale],
+            })}
+            title={translate(locale, "language.action", {
+              current: languageNames[locale],
+              next: languageNames[nextLocale],
+            })}
           >
-            <Icon name="sun" class="theme-sun" size={19} />
-            <Icon name="moon" class="theme-moon" size={19} />
-            <span id="theme-label">Theme</span>
-          </button>
+            <Icon name="language" size={19} />
+            <span id="language-label">{languageNames[locale]}</span>
+          </a>
+          <div class="theme-controls" hidden>
+            <button
+              class="theme-toggle"
+              id="theme-toggle"
+              type="button"
+              aria-label={translate(locale, "theme.action", {
+                current: translate(locale, "theme.system"),
+                next: translate(locale, "theme.light"),
+              })}
+            >
+              <Icon name="sun" class="theme-sun" size={19} />
+              <Icon name="moon" class="theme-moon" size={19} />
+              <span id="theme-label">{translate(locale, "theme.system")}</span>
+            </button>
+          </div>
         </div>
       </div>
     </header>
@@ -137,86 +240,52 @@ const contact =
     <footer class="site-footer">
       <div class="container footer-top">
         <div>
-          <a class="wordmark footer-wordmark" href={withBase()}>
+          <a
+            class="wordmark footer-wordmark"
+            href={localeUrl("", locale)}
+            data-route=""
+          >
             Muse
             <span class="wordmark-dot" aria-hidden="true">
               .
             </span>
           </a>
-          <p>Small tools. Thoughtfully made.</p>
+          <Text as="p" k="footer.tagline" />
         </div>
-        <div class="footer-principle">{site.philosophy}</div>
+        <Text as="div" class="footer-principle" k="brand.philosophy" />
       </div>
       <div class="container footer-bottom">
-        <p>An independent personal software collection.</p>
+        <Text as="p" k="footer.description" />
         <div class="footer-links">
           {source && (
             <a href={source}>
-              Source <Icon name="diagonal" size={15} />
+              <Text k="common.source" /> <Icon name="diagonal" size={15} />
             </a>
           )}
           {contact && (
             <a href={contact}>
-              Contact <Icon name="diagonal" size={15} />
+              <Text k="common.contact" /> <Icon name="diagonal" size={15} />
             </a>
           )}
-          <a href={withBase("about/")}>About Muse</a>
+          <a href={localeUrl("about/", locale)} data-route="about/">
+            <Text k="common.aboutMuse" />
+          </a>
         </div>
       </div>
     </footer>
-    <script>
-      const root = document.documentElement;
-      const button = document.querySelector<HTMLButtonElement>("#theme-toggle");
-      const label = document.querySelector("#theme-label");
-      const system = matchMedia("(prefers-color-scheme: dark)");
-      const options = ["system", "light", "dark"];
-      function applyTheme(preference: string) {
-        root.dataset.themePreference = preference;
-        root.dataset.theme =
-          preference === "dark" || (preference === "system" && system.matches)
-            ? "dark"
-            : "light";
-        const next =
-          options[(options.indexOf(preference) + 1) % options.length];
-        const name = preference.charAt(0).toUpperCase() + preference.slice(1);
-        if (label) label.textContent = name;
-        button?.setAttribute(
-          "aria-label",
-          `Theme: ${name}. Switch to ${next} theme`,
-        );
-        button?.setAttribute(
-          "title",
-          `Theme: ${name}. Switch to ${next} theme`,
-        );
-      }
-      if (button) {
-        document.querySelector<HTMLElement>(".theme-controls")!.hidden = false;
-        applyTheme(root.dataset.themePreference || "system");
-        button.addEventListener("click", () => {
-          const next =
-            options[
-              (options.indexOf(root.dataset.themePreference || "system") + 1) %
-                options.length
-            ];
-          applyTheme(next);
-          try {
-            localStorage.setItem("muse-theme", next);
-          } catch {
-            /* Preference still works for this page. */
-          }
-        });
-        system.addEventListener("change", () => {
-          if (root.dataset.themePreference === "system") applyTheme("system");
-        });
-        window.addEventListener("storage", (event) => {
-          if (event.key === "muse-theme")
-            applyTheme(
-              options.includes(event.newValue || "")
-                ? event.newValue!
-                : "system",
-            );
-        });
-      }
-    </script>
+    <p
+      id="language-status"
+      class="visually-hidden"
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+    ></p>
+    <script
+      type="application/json"
+      id="muse-translations"
+      set:html={json}
+      is:inline
+    />
+    <script set:html={preferences} is:inline />
   </body>
 </html>

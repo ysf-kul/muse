@@ -1,0 +1,35 @@
+---
+// Both languages render the original templates; no parallel page copies.
+import Home from "../index.astro";
+import About from "../about.astro";
+import Software from "../software/index.astro";
+import AppPage from "../software/[id].astro";
+import { apps } from "../../data/apps";
+import { publishedApps, type MuseApp } from "../../lib/catalog";
+export function getStaticPaths() {
+  return [
+    { params: { path: undefined }, props: { page: "home" } },
+    { params: { path: "about" }, props: { page: "about" } },
+    { params: { path: "software" }, props: { page: "software" } },
+    ...publishedApps(apps).map((app) => ({
+      params: { path: `software/${app.id}` },
+      props: { page: "app", app },
+    })),
+  ];
+}
+interface Props {
+  page: string;
+  app?: MuseApp;
+}
+const { page, app } = Astro.props;
+---
+
+{page === "home" ? (
+  <Home />
+) : page === "about" ? (
+  <About />
+) : page === "software" ? (
+  <Software />
+) : (
+  <AppPage app={app!} />
+)}

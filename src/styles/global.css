@@ -21,6 +21,45 @@ button {
     background-color var(--motion-standard) var(--motion-easing),
     color var(--motion-standard) var(--motion-easing);
 }
+html[data-language-pending] body {
+  visibility: hidden;
+}
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+.header-controls {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  max-width: 100%;
+}
+.language-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: var(--size-target);
+  padding: var(--space-2) var(--space-4);
+  border: var(--size-border) solid var(--color-outline-variant);
+  border-radius: var(--shape-full);
+  color: var(--color-on-surface-variant);
+  font-size: var(--type-label);
+  font-weight: var(--type-weight-medium);
+}
+.language-toggle:hover {
+  background: var(--color-state-layer);
+  border-color: var(--color-outline);
+}
 h1,
 h2,
 h3,
@@ -204,8 +243,8 @@ svg {
   height: 2px;
   background: var(--color-primary);
 }
-.hero h1 span,
-.page-heading h1 span {
+.hero h1 .headline-accent,
+.page-heading h1 .headline-accent {
   color: var(--color-primary);
 }
 .hero-slogan {
@@ -301,7 +340,7 @@ svg {
   letter-spacing: var(--type-tracking-display);
   font-weight: var(--type-weight-medium);
 }
-.hero-note > p span {
+.hero-note > p .editorial-accent {
   color: var(--color-inverse-primary);
 }
 .hero-note-bottom {
@@ -427,7 +466,7 @@ svg {
   font-size: var(--type-headline-panel);
   line-height: 1.2;
 }
-.philosophy-panel h2 span {
+.philosophy-panel h2 .headline-accent {
   color: var(--color-primary);
 }
 .philosophy-copy {
@@ -802,6 +841,22 @@ svg {
   .header-inner {
     min-height: var(--size-header-small);
     gap: var(--space-3);
+    flex-wrap: wrap;
+    padding-block: var(--space-3);
+  }
+  .header-inner > .wordmark {
+    order: 1;
+  }
+  .header-inner .header-controls {
+    order: 2;
+    margin-left: auto;
+  }
+  .header-inner nav {
+    order: 3;
+    flex-basis: 100%;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin: 0;
   }
   .header-inner nav {
     gap: 0;
@@ -889,7 +944,7 @@ svg {
   .header-inner > .wordmark {
     order: 1;
   }
-  .header-inner .theme-controls {
+  .header-inner .header-controls {
     order: 2;
     margin-left: auto;
   }

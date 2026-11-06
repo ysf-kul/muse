@@ -1,14 +1,16 @@
 ---
 import type { MuseApp } from "../lib/catalog";
-import { copy } from "../data/site";
+import Text from "./Text.astro";
+import { currentLocale, localeUrl, translatedAttribute } from "../i18n/server";
 import { withBase } from "../lib/paths";
 import Icon from "./Icon.astro";
 interface Props {
   app: MuseApp;
 }
 const { app } = Astro.props;
+const locale = currentLocale(Astro.url.pathname);
 const date = app.releaseDate
-  ? new Intl.DateTimeFormat("en", {
+  ? new Intl.DateTimeFormat(locale, {
       dateStyle: "long",
       timeZone: "UTC",
     }).format(new Date(app.releaseDate))
@@ -17,9 +19,13 @@ const targetPlatforms = ["Windows", "Linux"] as const;
 ---
 
 <div class="container page-content">
-  <a class="breadcrumb" href={withBase("software/")}>
+  <a
+    class="breadcrumb"
+    href={localeUrl("software/", locale)}
+    data-route="software/"
+  >
     <Icon name="back" size={18} />
-    All software
+    <Text k="common.allSoftware" />
   </a>
   <header class="app-detail-header">
     <div class="app-icon">
@@ -30,25 +36,28 @@ const targetPlatforms = ["Windows", "Linux"] as const;
       )}
     </div>
     <div>
-      <span class="chip">{copy.status[app.status]}</span>
+      <Text class="chip" k={`status.${app.status}`} />
       <h1>{app.name}</h1>
-      <p>{app.tagline}</p>
+      <Text as="p" value={app.tagline} />
     </div>
   </header>
-  <p class="detail-description">{app.description}</p>
+  <Text as="p" class="detail-description" value={app.description} />
   <section class="detail-section" aria-labelledby="screenshots-heading">
-    <h2 id="screenshots-heading">A closer look</h2>
+    <Text as="h2" id="screenshots-heading" k="app.screenshots" />
     {app.screenshots?.length ? (
       <div class="screenshot-grid">
         {app.screenshots.map((screenshot) => (
           <figure>
             <a
               href={withBase(screenshot.src)}
-              aria-label={`View full screenshot: ${screenshot.alt}`}
+              {...translatedAttribute("aria-label", "a11y.screenshot", locale, {
+                alt: screenshot.alt,
+              })}
             >
               <img
                 src={withBase(screenshot.src)}
-                alt={screenshot.alt}
+                alt={screenshot.alt[locale]}
+                data-localized-alt={JSON.stringify(screenshot.alt)}
                 width={screenshot.width}
                 height={screenshot.height}
                 loading="lazy"
@@ -56,7 +65,7 @@ const targetPlatforms = ["Windows", "Linux"] as const;
               />
             </a>
             {screenshot.caption && (
-              <figcaption>{screenshot.caption}</figcaption>
+              <Text as="figcaption" value={screenshot.caption} />
             )}
           </figure>
         ))}
@@ -64,7 +73,7 @@ const targetPlatforms = ["Windows", "Linux"] as const;
     ) : (
       <div class="media-empty">
         <Icon name="image" />
-        <p>{copy.mediaUnavailable}</p>
+        <Text as="p" k="app.mediaUnavailable" />
       </div>
     )}
   </section>
@@ -72,20 +81,17 @@ const targetPlatforms = ["Windows", "Linux"] as const;
     <div>
       {!!app.features?.length && (
         <section class="detail-section" aria-labelledby="features-heading">
-          <h2 id="features-heading">What it does</h2>
+          <Text as="h2" id="features-heading" k="app.features" />
           <ul>
             {app.features.map((feature) => (
-              <li>{feature}</li>
+              <Text as="li" value={feature} />
             ))}
           </ul>
         </section>
       )}
       <section class="detail-section" aria-labelledby="platforms-heading">
-        <h2 id="platforms-heading">Platforms & verification</h2>
-        <p>
-          Windows and Linux are Muse’s current desktop targets. A build alone
-          does not establish runtime compatibility.
-        </p>
+        <Text as="h2" id="platforms-heading" k="app.platforms" />
+        <Text as="p" k="app.platformDescription" />
         {targetPlatforms.map((platform) => {
           const tested = app.testedPlatforms?.find(
             (item) => item.platform === platform,
@@ -95,54 +101,60 @@ const targetPlatforms = ["Windows", "Linux"] as const;
           return (
             <div class="platform-record">
               <strong>{platform}</strong>
-              <p>
-                {supported
-                  ? "Supported · Runtime tested"
-                  : tested
-                    ? "Runtime tested · Support not declared"
-                    : built
-                      ? "Build verified · Runtime not tested"
-                      : "Support not verified"}
-              </p>
+              <Text
+                as="p"
+                k={
+                  supported
+                    ? "app.supported"
+                    : tested
+                      ? "app.tested"
+                      : built
+                        ? "app.built"
+                        : "app.unverified"
+                }
+              />
               {tested && (
                 <p>
-                  {tested.environment}
-                  {tested.notes && ` — ${tested.notes}`}
+                  <Text value={tested.environment} />
+                  {tested.notes && (
+                    <>
+                      {" — "}
+                      <Text value={tested.notes} />
+                    </>
+                  )}
                 </p>
               )}
             </div>
           );
         })}
-        <p class="platform-scope-note">
-          macOS is not currently supported or tested.
-        </p>
+        <Text as="p" class="platform-scope-note" k="app.macos" />
       </section>
       {!!app.requirements?.length && (
         <section class="detail-section" aria-labelledby="requirements-heading">
-          <h2 id="requirements-heading">Requirements</h2>
+          <Text as="h2" id="requirements-heading" k="app.requirements" />
           <ul>
             {app.requirements.map((item) => (
-              <li>{item}</li>
+              <Text as="li" value={item} />
             ))}
           </ul>
         </section>
       )}
       {!!app.installation?.length && (
         <section class="detail-section" aria-labelledby="installation-heading">
-          <h2 id="installation-heading">Installation</h2>
+          <Text as="h2" id="installation-heading" k="app.installation" />
           <ol>
             {app.installation.map((step) => (
-              <li>{step}</li>
+              <Text as="li" value={step} />
             ))}
           </ol>
         </section>
       )}
       {!!app.limitations?.length && (
         <section class="detail-section" aria-labelledby="limitations-heading">
-          <h2 id="limitations-heading">Known limitations</h2>
+          <Text as="h2" id="limitations-heading" k="app.limitations" />
           <ul>
             {app.limitations.map((item) => (
-              <li>{item}</li>
+              <Text as="li" value={item} />
             ))}
           </ul>
         </section>
@@ -150,54 +162,59 @@ const targetPlatforms = ["Windows", "Linux"] as const;
     </div>
     <aside
       class="detail-sidebar"
-      aria-label="Downloads and project information"
+      {...translatedAttribute("aria-label", "a11y.downloads", locale)}
     >
       {(app.version || date) && (
         <section class="detail-section" aria-labelledby="release-heading">
-          <h2 id="release-heading">Release information</h2>
-          {app.version && <p>Version {app.version}</p>}
+          <Text as="h2" id="release-heading" k="app.release" />
+          {app.version && (
+            <Text as="p" k="app.version" params={{ version: app.version }} />
+          )}
           {date && (
             <p>
-              Released <time datetime={app.releaseDate}>{date}</time>
+              <Text k="app.released" />{" "}
+              <time datetime={app.releaseDate} data-date={app.releaseDate}>
+                {date}
+              </time>
             </p>
           )}
         </section>
       )}
       <section class="detail-section" aria-labelledby="downloads-heading">
-        <h2 id="downloads-heading">Downloads</h2>
+        <Text as="h2" id="downloads-heading" k="app.downloads" />
         {app.downloads?.length ? (
           <div class="detail-actions">
             {app.downloads.map((download) => (
               <a class="button button-filled" href={download.url}>
                 <Icon name="download" size={18} />
-                {download.label} · {download.platform}
+                <Text value={download.label} /> · {download.platform}
                 {download.size && ` · ${download.size}`}
               </a>
             ))}
           </div>
         ) : (
-          <p>{copy.downloadsUnavailable}</p>
+          <Text as="p" k="app.downloadsUnavailable" />
         )}
       </section>
       {(app.repositoryUrl || app.documentationUrl || app.issuesUrl) && (
         <section class="detail-section" aria-labelledby="project-links-heading">
-          <h2 id="project-links-heading">Project links</h2>
+          <Text as="h2" id="project-links-heading" k="app.links" />
           <div class="detail-actions">
             {app.repositoryUrl && (
               <a class="text-link" href={app.repositoryUrl}>
-                Source repository
+                <Text k="app.repository" />
                 <Icon name="diagonal" size={18} />
               </a>
             )}
             {app.documentationUrl && (
               <a class="text-link" href={app.documentationUrl}>
-                Documentation
+                <Text k="app.documentation" />
                 <Icon name="diagonal" size={18} />
               </a>
             )}
             {app.issuesUrl && (
               <a class="text-link" href={app.issuesUrl}>
-                Report an issue
+                <Text k="app.issues" />
                 <Icon name="diagonal" size={18} />
               </a>
             )}
