@@ -24,6 +24,8 @@ The synthetic app fixtures are served from a separate test-only project. They ex
 
 Initial test failures involved missing development types, an obsolete font stylesheet import, and test server/fixture configuration. They were corrected; the final suites pass. Playwright used an Ubuntu fallback Chromium package on CachyOS. These browser results apply to this Linux environment, not every distribution.
 
-GitHub Pages deployment evidence is recorded in [the workflow runs](https://github.com/ysf-kul/muse/actions) and the `github-pages` environment. The configured project URL is **https://ysf-kul.github.io/muse/**. Hosting is verified separately after pushing; a successful local build alone does not prove deployment.
+The [initial GitHub Actions run](https://github.com/ysf-kul/muse/actions/runs/42305782496) successfully completed locked dependency installation, formatting, all unit and browser tests, the production build, artifact upload, and GitHub Pages deployment. GitHub Pages uses the workflow source and enforces HTTPS. The repository homepage points to **https://ysf-kul.github.io/muse/**.
+
+The deployed site was also checked in Chromium: home, software, and about pages returned HTTP 200 in light and dark themes at 375 and 1440 px (12 combinations), with no horizontal overflow, script exceptions, or detected Axe WCAG violations. Canonical URLs matched the deployed project path. The empty catalog, custom HTTP 404 and recovery link, sitemap, robots file, favicon, and social-preview image were verified live.
 
 Remaining verification limits: actual Windows desktop/browser workflows, physical mobile devices, human screen readers, and additional browser engines. No macOS support is claimed. No application screenshots, builds, or desktop functionality can be validated until real projects are published.

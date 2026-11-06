@@ -112,9 +112,9 @@ The social preview is a typography-only image, not an application screenshot. Re
 
 Project authorship remains with the repository owner. AI assistance is acknowledged without implying ownership or endorsement by an AI provider.
 
-OpenAI’s [official Codex source](https://github.com/openai/codex/blob/main/codex-rs/ext/git-attribution/src/world_state.rs) publishes `Co-authored-by: Codex <noreply@openai.com>`. The official [oai-codex GitHub organization](https://github.com/oai-codex) lists that email and links to OpenAI Codex. It is an organization, so the trailer acknowledges the tool; it does not promise a separate human contributor or contribution-graph entry.
+OpenAI’s [official Codex source](https://github.com/openai/codex/blob/main/codex-rs/ext/git-attribution/src/world_state.rs) publishes `Co-authored-by: Codex <noreply@openai.com>`. GitHub recognizes that trailer on this repository’s implementation commit and associates it with [Codex](https://github.com/codex), whose profile lists OpenAI. The [oai-codex GitHub organization](https://github.com/oai-codex) also publicly lists the email. This acknowledges the coding tool without implying a human contributor or provider ownership.
 
-Anthropic’s [Claude Code settings reference](https://code.claude.com/docs/en/settings-reference) documents its attribution settings, and [claude](https://github.com/claude) lists Anthropic affiliation. A GitHub-associated co-author email was not publicly verified in this investigation. This implementation was completed with Codex; no Claude co-author trailer is added without evidence of a Claude contribution and a verified identity.
+Anthropic’s [Claude Code settings reference](https://code.claude.com/docs/en/settings-reference#attribution-commit) documents its default `noreply@anthropic.com` trailer, and [claude](https://github.com/claude) lists Anthropic affiliation. A GitHub-associated co-author email was not publicly verified in this investigation. This implementation was completed with Codex; no Claude co-author trailer is added without evidence of a Claude contribution and a verified identity.
 
 ## Verification limits
 
