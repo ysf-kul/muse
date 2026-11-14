@@ -81,3 +81,32 @@ Website browser verification runs on Linux with Chromium. It does not validate
 Windows desktop execution, USB drivers, physical mobile devices, or human
 screen-reader use. Product hardware measurements and operating-system boundaries
 are maintained in the application's own release documentation.
+
+## Muse Video Bridge 0.4.1 repair integration — 2026-11-15
+
+The catalog now uses the verified 0.4.1 pre-release and its five desktop download
+URLs. All eight archive/source assets and SHA256SUMS.txt were downloaded again
+from GitHub and verified, including the Windows ZIP's internal hashes and fresh
+optimized executable. Existing 0.4.0 assets/tags remain unchanged.
+
+The screenshot is a captured standalone 0.4.1 Linux portable window in English,
+light theme, disconnected. It is an actual application capture, not a mockup.
+Batch preparation/upload/export, persistent queue/mode and prepared registrations,
+matching 921600-baud firmware requirements, and honest Windows/touch limits are
+reflected in both languages. Real Linux hardware measured a 1.54 MB new payload
+at 28.8 kB/s; other batch rates varied. Playback drew 10,065 frames in 336.006
+active seconds (29.9548 FPS), with 15 new full-region memory checks and zero
+pixel mismatches or DMA ownership errors. Failed serial commands and
+contact-bearing diagnostic clips are explicitly excluded in the product report.
+
+The final local checks passed: 22 unit tests; Astro/TypeScript with zero errors,
+warnings or hints; nine-page production build; source formatting; and all four
+product Chromium cases in 9.6 seconds, across Turkish/English and light/dark,
+responsive layout, downloads and accessibility. The published Windows ZIP passed
+[the new Windows Server 2025 runner smoke](https://github.com/ysf-kul/musevideobridge/actions/runs/43653973671):
+external/internal hashes, bundled probe/conversion/decode, native window creation
+and five-second survival. Physical Windows USB and Windows 10/11 interactive
+acceptance remain unverified. Physical touch/calibration/visual and moved-card
+FAT32 export remain unverified. Firmware remains source-distributed.
+
+Pages deployment and live EN/TR URLs are verified after the catalog commit.
