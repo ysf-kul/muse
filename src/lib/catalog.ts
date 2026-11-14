@@ -38,6 +38,7 @@ export interface MuseApp {
     size?: string;
   }[];
   repositoryUrl?: string;
+  releaseUrl?: string;
   documentationUrl?: string;
   issuesUrl?: string;
   featured?: boolean;
@@ -102,6 +103,7 @@ export function validateCatalog(entries: MuseApp[]): void {
       fail("invalid status");
     for (const key of [
       "repositoryUrl",
+      "releaseUrl",
       "documentationUrl",
       "issuesUrl",
     ] as const) {

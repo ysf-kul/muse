@@ -1,0 +1,22 @@
+---
+// Preserve empty-catalog coverage as the production catalog gains real apps.
+import Layout from "../../../../src/layouts/Layout.astro";
+import EmptyCatalog from "../../../../src/components/EmptyCatalog.astro";
+import Text from "../../../../src/components/Text.astro";
+---
+
+<Layout title={{ tr: "Boş katalog testi", en: "Empty catalog test" }} noindex>
+  <div class="container page-content">
+    <Text
+      as="h1"
+      value={{ tr: "Boş katalog testi", en: "Empty catalog test" }}
+    />
+    <EmptyCatalog headingLevel="h2" />
+    <aside class="catalog-note">
+      <div>
+        <Text as="h2" k="catalog.noteTitle" />
+        <Text as="p" k="catalog.note" />
+      </div>
+    </aside>
+  </div>
+</Layout>

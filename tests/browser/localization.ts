@@ -5,6 +5,7 @@ import {
   languageNames,
   type Locale,
 } from "../../src/i18n/messages";
+import { apps } from "../../src/data/apps";
 
 /** Check the complete DOM contract, including unregistered text and app fields. */
 export async function expectLanguage(page: Page, locale: Locale) {
@@ -13,7 +14,7 @@ export async function expectLanguage(page: Page, locale: Locale) {
     locale === "tr" ? "Türkçe" : "English",
   );
   const failures = await page.evaluate(
-    ({ copy, locale }) => {
+    ({ copy, locale, catalogValues }) => {
       const problems: string[] = [];
       const expected = (element: Element, attribute?: string) => {
         const suffix = attribute ? `-${attribute}` : "";
@@ -61,6 +62,7 @@ export async function expectLanguage(page: Page, locale: Locale) {
         "M",
         "Windows",
         "Linux",
+        ...catalogValues,
       ]);
       const walker = document.createTreeWalker(
         document.body,
@@ -83,7 +85,17 @@ export async function expectLanguage(page: Page, locale: Locale) {
       }
       return problems;
     },
-    { copy: messages[locale], locale },
+    {
+      copy: messages[locale],
+      locale,
+      catalogValues: apps.flatMap((app) => [
+        app.name,
+        ...(app.downloads ?? []).map(
+          (download) =>
+            `${download.platform}${download.size ? ` · ${download.size}` : ""}`,
+        ),
+      ]),
+    },
   );
   expect(failures).toEqual([]);
   await expect(page.locator('meta[property="og:locale"]')).toHaveAttribute(

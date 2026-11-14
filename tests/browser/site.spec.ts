@@ -186,10 +186,10 @@ for (const locale of locales) {
       ).toBe("0s");
     });
 
-    test("empty catalog publishes no fictional product or unsupported badges", async ({
+    test("isolated empty catalog publishes no fictional product or unsupported badges", async ({
       page,
     }) => {
-      await page.goto("software/");
+      await page.goto("http://127.0.0.1:4322/muse/empty/");
       await expect(
         page.getByText(copy["catalog.emptyDescription"], {
           exact: false,

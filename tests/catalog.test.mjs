@@ -90,10 +90,13 @@ test("optional URLs reject scripts, credentials, and empty links", () => {
     "https://user:password@github.com",
   ]) {
     assert.equal(isWebUrl(url), false);
-    assert.throws(
-      () => validateCatalog([fixture({ repositoryUrl: url })]),
-      /HTTP/,
-    );
+    for (const key of [
+      "repositoryUrl",
+      "releaseUrl",
+      "documentationUrl",
+      "issuesUrl",
+    ])
+      assert.throws(() => validateCatalog([fixture({ [key]: url })]), /HTTP/);
   }
   assert.equal(isWebUrl("https://github.com/ysf-kul/muse"), true);
 });

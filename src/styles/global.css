@@ -575,6 +575,7 @@ svg {
 .app-card {
   display: flex;
   flex-direction: column;
+  min-width: 0;
   background: var(--color-surface);
   border: var(--size-border) solid var(--color-outline-variant);
   border-radius: var(--shape-large);
@@ -586,6 +587,7 @@ svg {
 }
 .app-card-top {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: var(--space-3);
@@ -610,6 +612,7 @@ svg {
   object-fit: contain;
 }
 .app-card > p {
+  overflow-wrap: anywhere;
   color: var(--color-on-surface-variant);
   margin-block: var(--space-3) var(--space-4);
   flex-grow: 1;
@@ -739,6 +742,7 @@ svg {
   margin-top: var(--space-10);
 }
 .detail-section {
+  overflow-wrap: anywhere;
   margin-bottom: var(--space-10);
 }
 .detail-section h2 {
@@ -985,7 +989,7 @@ svg {
   }
   .app-grid,
   .screenshot-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
   .footer-top,
   .footer-bottom {
@@ -998,6 +1002,7 @@ svg {
   }
   .app-detail-header {
     gap: var(--space-4);
+    flex-direction: column;
   }
 }
 @media (prefers-reduced-motion: reduce) {

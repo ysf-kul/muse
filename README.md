@@ -4,7 +4,7 @@ Simple software that makes everyday life better.
 
 Muse is an independent personal collection of useful software projects, built with AI assistance. This repository contains its static showcase website. **Different Apps. One Muse.**
 
-The software catalog is intentionally empty until actual applications are ready to be published. No application features, screenshots, downloads, or contact details have been invented.
+The software catalog presents verified applications with their actual releases, download links, setup instructions, and platform test boundaries. Muse Video Bridge is the first published entry; its cards and detail pages use the shared catalog architecture.
 
 ## Develop and build
 
@@ -60,7 +60,7 @@ npm run test:e2e
 
 On supported Linux CI distributions, install the browser and system libraries with `npx playwright install --with-deps chromium`. Playwright may use a fallback browser package on other distributions; that is not a claim of universal Linux compatibility.
 
-The tests start a production preview, a component fixture site, and an isolated navigation fixture build. Synthetic fixture data lives under `tests/detail-fixture/`. `tests/navigation-fixture/` builds the actual production page templates and routes with that test catalog, allowing real Home → Software → detail → About journeys. The catalog substitution exists only in that fixture's Vite configuration; production data and routes remain empty. Neither fixture is uploaded to GitHub Pages.
+The tests start a production preview, a component fixture site, and an isolated navigation fixture build. Synthetic fixture data lives under `tests/detail-fixture/`. `tests/navigation-fixture/` builds the actual production page templates and routes with that test catalog, allowing real Home → Software → detail → About journeys. The catalog substitution exists only in that fixture's Vite configuration; production data and routes remain independent of the fixtures. Neither fixture is uploaded to GitHub Pages.
 
 Tests cover both languages, internal links, HTTP status codes, custom 404 recovery, metadata and local assets, 320–1920 px widths, 200% text, keyboard access, focus rings, reduced motion, disabled JavaScript, blocked and invalid preference storage, immediate switching, preference persistence, direct URLs that conflict with saved preferences, new tabs, Back/Forward, cache-restoration events, inserted content, tab synchronization, and automated WCAG accessibility checks in light and dark themes. DOM audits detect missing or incorrect translations, unregistered visible text, wrong-language links, and untranslated app fields. Automated accessibility checks complement human screen-reader testing.
 
@@ -83,18 +83,18 @@ Required fields are `id` (a unique lowercase slug), `name`, `tagline`, `descript
 
 Optional fields:
 
-| Field                                            | Verified content to provide                                                    |
-| ------------------------------------------------ | ------------------------------------------------------------------------------ |
-| `icon`                                           | Local `/assets/` path; otherwise a text initial is used                        |
-| `screenshots`                                    | `{ src, alt, width, height, caption? }`; `alt` and `caption` use `{ tr, en }`  |
-| `features`                                       | Implemented features, each as `{ tr, en }`                                     |
-| `platforms`                                      | Supported `Windows` and/or `Linux`, backed by runtime records                  |
-| `testedPlatforms`                                | Actual runtime records; `environment` and optional `notes` use `{ tr, en }`    |
-| `buildVerifiedPlatforms`                         | Build verification only; never treated as runtime support                      |
-| `requirements`, `installation`, `limitations`    | Lists of `{ tr, en }` values for verified requirements, steps, and limitations |
-| `version`, `releaseDate`                         | Verified version and real ISO `YYYY-MM-DD` date                                |
-| `downloads`                                      | `{ label, platform, url, size? }`; `label` uses `{ tr, en }` for real builds   |
-| `repositoryUrl`, `documentationUrl`, `issuesUrl` | Real HTTP(S) project links                                                     |
+| Field                                                          | Verified content to provide                                                    |
+| -------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| `icon`                                                         | Local `/assets/` path; otherwise a text initial is used                        |
+| `screenshots`                                                  | `{ src, alt, width, height, caption? }`; `alt` and `caption` use `{ tr, en }`  |
+| `features`                                                     | Implemented features, each as `{ tr, en }`                                     |
+| `platforms`                                                    | Supported `Windows` and/or `Linux`, backed by runtime records                  |
+| `testedPlatforms`                                              | Actual runtime records; `environment` and optional `notes` use `{ tr, en }`    |
+| `buildVerifiedPlatforms`                                       | Build verification only; never treated as runtime support                      |
+| `requirements`, `installation`, `limitations`                  | Lists of `{ tr, en }` values for verified requirements, steps, and limitations |
+| `version`, `releaseDate`                                       | Verified version and real ISO `YYYY-MM-DD` date                                |
+| `downloads`                                                    | `{ label, platform, url, size? }`; `label` uses `{ tr, en }` for real builds   |
+| `repositoryUrl`, `releaseUrl`, `documentationUrl`, `issuesUrl` | Real HTTP(S) project links                                                     |
 
 Unknown optional fields should be omitted. Empty sections and buttons are not rendered. Missing screenshots and downloads have explicit unavailable states. Preserve accurate screenshot dimensions to prevent layout shifts, and use compressed WebP/PNG assets appropriate to their display size.
 
@@ -129,4 +129,4 @@ Anthropic’s [Claude Code settings reference](https://code.claude.com/docs/en/s
 
 ## Verification limits
 
-See `VERIFICATION.md` for actual checks and environment results. No published desktop applications are present. Windows desktop workflows, macOS, human screen-reader behavior, and physical mobile devices are not validated by this website’s Linux browser tests.
+Muse Video Bridge appears on the home page, software catalog, and bilingual detail routes `/software/video-bridge/` and `/en/software/video-bridge/`, relative to the configured base. Its release and download links refer to the actual GitHub publication. Platform records distinguish runtime testing from build verification; previous device FPS measurements are identified as previous results. Windows desktop workflows, human screen-reader behavior, and physical mobile devices are not validated by this website’s Linux browser tests. See `WEBSITE_RELEASE_VERIFICATION.md` for this integration’s checks.

@@ -196,13 +196,22 @@ const targetPlatforms = ["Windows", "Linux"] as const;
           <Text as="p" k="app.downloadsUnavailable" />
         )}
       </section>
-      {(app.repositoryUrl || app.documentationUrl || app.issuesUrl) && (
+      {(app.repositoryUrl ||
+        app.releaseUrl ||
+        app.documentationUrl ||
+        app.issuesUrl) && (
         <section class="detail-section" aria-labelledby="project-links-heading">
           <Text as="h2" id="project-links-heading" k="app.links" />
           <div class="detail-actions">
             {app.repositoryUrl && (
               <a class="text-link" href={app.repositoryUrl}>
                 <Text k="app.repository" />
+                <Icon name="diagonal" size={18} />
+              </a>
+            )}
+            {app.releaseUrl && (
+              <a class="text-link" href={app.releaseUrl}>
+                <Text k="app.releaseNotes" />
                 <Icon name="diagonal" size={18} />
               </a>
             )}
