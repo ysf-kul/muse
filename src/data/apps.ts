@@ -122,8 +122,8 @@ export const apps: MuseApp[] = [
     ],
     limitations: [
       {
-        tr: "0.4.0 bir ön sürümdür. Dokunmatik kontroller deneyseldir: gözlemlenemeyen donanım denemelerinde temas algılandı ve kontrol katmanı kısa süre göründü. Fiziksel kalibrasyon ve dokunma doğrulaması tamamlanmadı.",
-        en: "0.4.0 is a pre-release. Touch controls are experimental: unobserved hardware runs registered contacts and briefly showed the overlay. Physical calibration and touch acceptance are incomplete.",
+        tr: "0.4.0 bir ön sürümdür. Kullanıcı denemeler sırasında panele dokunduğunu doğruladı; temaslı klipler boşta dokunma doğrulamasına katılmadı. Fiziksel dokunmatik düğme işlevleri, kalibrasyon ve ekran görünümü henüz tam doğrulanmadı.",
+        en: "0.4.0 is a pre-release. The owner confirmed tapping during diagnostics; contact-affected clips are excluded from idle qualification. Physical touch-button actions, calibration and display acceptance are incomplete.",
       },
       {
         tr: "Fiziksel dokunma, panel kalibrasyonu ve ekran görünümü doğrulanmadı. Kuyruk sırası, döngü modu ve yerel önizleme kayıtları oturuma aittir; cihaz yeniden başlatılınca gerçek durum yeniden okunur.",
